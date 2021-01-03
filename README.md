@@ -70,5 +70,21 @@ terraform destroy
 To check the host availability
 
 ```bash
-ansible -i inventory.ini vm -m ping
+$ ansible -i inventory.ini vms -m ping
+sandbox | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+```
+
+### Ad-hoc: simple shell command
+
+Run simple shell command
+
+```bash
+$ ansible -i inventory.ini vms -a "free -m"
+sandbox | CHANGED | rc=0 >>
+              total        used        free      shared  buff/cache   available
+Mem:            953         158         231           0         562         654
+Swap:             0           0           0
 ```

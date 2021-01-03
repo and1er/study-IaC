@@ -1,5 +1,5 @@
-[vm]
-${sandbox_host}
+[vms]
+sandbox ansible_host=${sandbox_host}
 
 [all:vars]
 ansible_ssh_user = ${ssh_user}
