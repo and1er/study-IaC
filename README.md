@@ -4,66 +4,84 @@ My Ansible study on AWS instances provisioned by Terraform.
 
 The infrastructure for Ansible study is created in AWS EC2 cloud service using Terraform.
 
-Terraform also generates `inventory.ini` file for Ansible for further playbook calls.
+Terraform also generates `inventory.ini` file and deploys public SSH key for Ansible for further playbook calls.
+
+## Requirements
+
+To setup the environment and run playbooks (the actual versions I used are listed below)
+
+* get Linux/Unix system (I use [Debian in WSL](https://github.com/and1er/wsl-debian-settings)), Ansible cannot work properly on pure Windows;
+* get AWS user access key pair from [AWS account](https://aws.amazon.com/), [IAM service](https://console.aws.amazon.com/iam/home);
+* [install Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html);
+
+    ```bash
+    $ ansible --version
+    ansible 2.9.12
+    ...
+    python version = 3.7.3 (default, Jul 25 2020, 13:03:44) [GCC 8.3.0]
+    ```
+
+* [install Terraform](https://www.terraform.io/downloads.html);
+
+    ```bash
+    $ terraform --version
+    Terraform v0.14.2
+    ```
+
+* copy env-vars setup script from versioned example to gitignored file;
+
+    ```bash
+    cp ./secrets.sh.example ./secrets.sh
+    ```
+
+* fill `secrets.sh` with personal data;
+* every work session should be started from the script call to setup the env (in the same terminal as Terraform will be run)
+
+    ```bash
+    source ./secrets.sh
+    ```
 
 ## single-vm
 
-Single virtual machine experiments.
-
-Terraform should be installed and following environment variables should be set:
-
-```bash
-# AWS credentials.
-export AWS_ACCESS_KEY_ID="xxx"
-export AWS_SECRET_ACCESS_KEY="yyy"
-export AWS_DEFAULT_REGION="zzz"
-
-# Personal public key for SSH connection (a value).
-# To read the key from a default path use following value:
-# "$(cat ~/.ssh/id_rsa.pub)"
-export TF_VAR_STUDY_ANSIBLE_PUBLIC_KEY="ssh-rsa zzz"
-
-# A path to private SSH key file.
-# Default value is "~/.ssh/id_rsa"
-export TF_STUDY_ANSIBLE_PRIVATE_KEY_FILE="~/.ssh/id_rsa"
-
-# Set a personal SSH access security rule for the instance.
-# To get personal external IP-address dynamically use:
-# "$(curl --silent http://ipecho.net/plain)/32"
-export TF_VAR_STUDY_ANSIBLE_PERSONAL_SSH_ACCESS_CIDR="xxx.xxx.xxx.xxx/32"
-```
-
-A working directory should be `single-vm`
+Single virtual machine experiments. A working directory should be `single-vm`
 
 ```bash
 cd ./single-vm
 ```
 
-Then setup the environment using Terraform:
+* First of all setup the env-vars.
 
-* init the working copy project
+    ```bash
+    source ../secrets.sh
+    ```
+
+* Then init Terraform the working copy project.
 
     ```bash
     terraform init
     ```
 
-* check what Terraform is going to do
+Ready to work!
+
+* Review what Terraform is going to do.
 
     ```bash
     terraform plan
     ```
 
-* and run
+* Run!
 
     ```bash
     terraform apply
     ```
 
-**DO NOT FORGET** to stop the instances after the work using (to save a AWS budget)
+**DO NOT FORGET TO STOP** the instances after the work using (to save a AWS budget)
 
 ```bash
 terraform destroy
 ```
+
+---
 
 ### Ad-hoc: ping
 
