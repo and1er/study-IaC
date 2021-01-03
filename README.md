@@ -89,6 +89,7 @@ To check the host availability
 
 ```bash
 $ ansible -i inventory.ini vms -m ping
+
 sandbox | SUCCESS => {
     "changed": false,
     "ping": "pong"
@@ -97,12 +98,35 @@ sandbox | SUCCESS => {
 
 ### Ad-hoc: simple shell command
 
-Run simple shell command
+Run simple shell command.
 
-```bash
-$ ansible -i inventory.ini vms -a "free -m"
-sandbox | CHANGED | rc=0 >>
-              total        used        free      shared  buff/cache   available
-Mem:            953         158         231           0         562         654
-Swap:             0           0           0
-```
+* get free RAM:
+
+    ```bash
+    $ ansible -i inventory.ini vms -a "free -m"
+
+    sandbox | CHANGED | rc=0 >>
+                total        used        free      shared  buff/cache   available
+    Mem:            953         158         231           0         562         654
+    Swap:             0           0           0
+    ```
+
+* view disk usage:
+
+    ```bash
+    $ ansible -i inventory.ini vms -a "df -h"
+
+    sandbox | CHANGED | rc=0 >>
+    Filesystem      Size  Used Avail Use% Mounted on
+    /dev/root       7.7G  1.3G  6.5G  17% /
+    devtmpfs        473M     0  473M   0% /dev
+    tmpfs           477M     0  477M   0% /dev/shm
+    tmpfs            96M  764K   95M   1% /run
+    tmpfs           5.0M     0  5.0M   0% /run/lock
+    tmpfs           477M     0  477M   0% /sys/fs/cgroup
+    /dev/loop0       33M   33M     0 100% /snap/amazon-ssm-agent/2996
+    /dev/loop1       56M   56M     0 100% /snap/core18/1932
+    /dev/loop2       68M   68M     0 100% /snap/lxd/18150
+    /dev/loop3       32M   32M     0 100% /snap/snapd/10492
+    tmpfs            96M     0   96M   0% /run/user/1000
+    ```
