@@ -52,3 +52,18 @@ resource "aws_instance" "ubuntu_ansible_sandbox" {
     "Name" = "Single Ansible sandbox host"
   }
 }
+
+# Generate Ansible inventory file.
+data "template_file" "ansible_inventory_content" {
+  template = file("./templates/inventory.ini.tpl")
+  vars = {
+    sandbox_host = aws_instance.ubuntu_ansible_sandbox.public_ip
+    ssh_user = var.ansible_inventory_ssh_user
+    ssh_private_key_file = var.STUDY_ANSIBLE_PRIVATE_KEY_FILE
+    python_interpreter = var.ansible_inventory_python_interpreter
+  }
+}
+resource "local_file" "ansible_inventory_file" {
+  content = data.template_file.ansible_inventory_content.rendered
+  filename = var.ansible_inventory_file_path
+}

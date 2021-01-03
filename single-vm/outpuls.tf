@@ -12,3 +12,7 @@ output "instance_ipv4_address" {
   description = "An IPv4 address of created instance"
   value = aws_instance.ubuntu_ansible_sandbox.public_ip
 }
+
+output "ansible_inventory_file_path" {
+  value = var.ansible_inventory_file_path
+}
