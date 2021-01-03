@@ -16,3 +16,11 @@ output "instance_ipv4_address" {
 output "ansible_inventory_file_path" {
   value = var.ansible_inventory_file_path
 }
+
+output "latest_ubuntu_focal_ami_id" {
+  value = data.aws_ami.latest_ubuntu_focal.id
+}
+
+output "latest_ubuntu_focal_ami_name" {
+  value = data.aws_ami.latest_ubuntu_focal.name
+}

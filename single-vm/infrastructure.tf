@@ -1,12 +1,12 @@
 provider "aws" {}
 
-# SSH access key.
+# --- SSH access key ---
 resource "aws_key_pair" "ssh_access_key" {
   key_name = "and1er-ssh-access-key"
   public_key = var.STUDY_ANSIBLE_PUBLIC_KEY
 }
 
-# Security groups.
+# --- Security groups ---
 resource "aws_security_group" "webserver_group" {
   name = "Webserver security group"
   description = "Basic security rules for webservers."
@@ -39,9 +39,20 @@ resource "aws_security_group" "webserver_group" {
   }
 }
 
-# Instances.
+# --- Instances ---
+# Lookup for latest Ubuntu 20.04 OS image for any region.
+# Tested on "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20201210"
+data "aws_ami" "latest_ubuntu_focal" {
+  owners      = ["099720109477"]
+  most_recent = true
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
+}
+# Lauch the instance.
 resource "aws_instance" "ubuntu_ansible_sandbox" {
-  ami = "ami-0a3a4169ad7cb0d77"
+  ami = data.aws_ami.latest_ubuntu_focal.id
   instance_type = "t3.micro"
   key_name = "and1er-ssh-access-key"
   vpc_security_group_ids = [
