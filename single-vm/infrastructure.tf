@@ -24,7 +24,7 @@ resource "aws_security_group" "webserver_group" {
 
   ingress {
     description = "Incoming SSH connections"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.STUDY_ANSIBLE_PERSONAL_SSH_ACCESS_CIDR]
     from_port = 22
     to_port = 22
     protocol = "tcp"
