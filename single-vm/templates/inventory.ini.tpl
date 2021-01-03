@@ -1,4 +1,4 @@
-[sandbox_hosts]
+[vm]
 ${sandbox_host}
 
 [all:vars]

@@ -1,17 +1,14 @@
-study-ansible
-================
+# study-ansible
 
 My Ansible study on AWS instances provisioned by Terraform.
-
-Infrastructure
------------------
 
 The infrastructure for Ansible study is created in AWS EC2 cloud service using Terraform.
 
 Terraform also generates `inventory.ini` file for Ansible for further playbook calls.
 
-Run Terraform
-----------------
+## single-vm
+
+Single virtual machine experiments.
 
 Terraform should be installed and following environment variables should be set:
 
@@ -36,6 +33,12 @@ export TF_STUDY_ANSIBLE_PRIVATE_KEY_FILE="~/.ssh/id_rsa"
 export TF_VAR_STUDY_ANSIBLE_PERSONAL_SSH_ACCESS_CIDR="xxx.xxx.xxx.xxx/32"
 ```
 
+A working directory should be `single-vm`
+
+```bash
+cd ./single-vm
+```
+
 Then setup the environment using Terraform:
 
 * init the working copy project
@@ -56,8 +59,16 @@ Then setup the environment using Terraform:
     terraform apply
     ```
 
-To stop the instances in the end use
+**DO NOT FORGET** to stop the instances after the work using (to save a AWS budget)
 
 ```bash
 terraform destroy
+```
+
+### Ad-hoc: ping
+
+To check the host availability
+
+```bash
+ansible -i inventory.ini vm -m ping
 ```
