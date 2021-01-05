@@ -6,6 +6,11 @@ The infrastructure for Ansible study is created in AWS EC2 cloud service using T
 
 Terraform also generates `inventory.ini` file and deploys public SSH key for Ansible for further playbook calls.
 
+## TODO
+
+* `command` vs `shell` examples;
+* `include_*` vs `import_` examples;
+
 ## Requirements
 
 To setup the environment and run playbooks (the actual versions I used are listed below)
