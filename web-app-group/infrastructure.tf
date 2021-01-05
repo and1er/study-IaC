@@ -7,6 +7,7 @@ resource "aws_key_pair" "ssh_access_key" {
 }
 
 # --- Security groups ---
+# TODO: Separate security groups for each host role.
 resource "aws_security_group" "webserver_group" {
   name = "Webserver security group"
   description = "Basic security rules for webservers."
@@ -39,6 +40,9 @@ resource "aws_security_group" "webserver_group" {
   }
 }
 
+# --- VPC ---
+# TODO: Create a VPC.
+
 # --- Instances ---
 # Lookup for latest Ubuntu 20.04 OS image for any region.
 # Tested on "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20201210"
@@ -50,8 +54,8 @@ data "aws_ami" "latest_ubuntu_focal" {
     values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
   }
 }
-# Launch the instance.
-resource "aws_instance" "ubuntu_ansible_sandbox" {
+# Launch the instances.
+resource "aws_instance" "web_ansible_sandbox_host" {
   ami = data.aws_ami.latest_ubuntu_focal.id
   instance_type = "t3.micro"
   key_name = "vm-ssh-access-key"
@@ -60,7 +64,35 @@ resource "aws_instance" "ubuntu_ansible_sandbox" {
   ]
 
   tags = {
-    "Name" = "Single Ansible sandbox host"
+    "Name" = "Web Ansible sandbox host"
+    "Role" = "web-server"
+  }
+}
+
+resource "aws_instance" "app_ansible_sandbox_host" {
+  ami = data.aws_ami.latest_ubuntu_focal.id
+  instance_type = "t3.micro"
+  key_name = "vm-ssh-access-key"
+  vpc_security_group_ids = [
+    aws_security_group.webserver_group.id
+  ]
+  count = 2
+  tags = {
+    "Name" = "Application Ansible sandbox host"
+    "Role" = "app-server"
+  }
+}
+
+resource "aws_instance" "db_ansible_sandbox_host" {
+  ami = data.aws_ami.latest_ubuntu_focal.id
+  instance_type = "t3.micro"
+  key_name = "vm-ssh-access-key"
+  vpc_security_group_ids = [
+    aws_security_group.webserver_group.id
+  ]
+  tags = {
+    "Name" = "Database Ansible sandbox host"
+    "Role" = "db-server"
   }
 }
 
@@ -68,7 +100,13 @@ resource "aws_instance" "ubuntu_ansible_sandbox" {
 data "template_file" "ansible_inventory_content" {
   template = file("./templates/inventory.ini.tpl")
   vars = {
-    sandbox_host = aws_instance.ubuntu_ansible_sandbox.public_ip
+    # Hosts.
+    web_host = aws_instance.web_ansible_sandbox_host.public_ip
+    # TODO: Process multiple instances dynamically.
+    app1_host = aws_instance.app_ansible_sandbox_host[0].public_ip
+    app2_host = aws_instance.app_ansible_sandbox_host[1].public_ip
+    db_host = aws_instance.db_ansible_sandbox_host.public_ip
+    # Parameters
     ssh_user = var.ansible_inventory_ssh_user
     ssh_private_key_file = var.STUDY_ANSIBLE_PRIVATE_KEY_FILE
     python_interpreter = var.ansible_inventory_python_interpreter

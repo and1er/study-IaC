@@ -54,9 +54,17 @@ To setup the environment and run playbooks (the actual versions I used are liste
      export AWS_SECRET_ACCESS_KEY="my very secret key"
     ```
 
-## single-vm
+## Workspaces
 
-Single virtual machine experiments. A working directory should be `single-vm`
+* **single-vm** -- one EC2 instance;
+* **web-app-group** -- multi-instance group with hosts
+  * 1 x web (a load balancer);
+  * 2 x app;
+  * 1 x db.
+
+## Launch Instances
+
+Select a workspace, e.g. `single-vm`
 
 ```bash
 cd ./single-vm
@@ -82,7 +90,7 @@ Ready to work!
     terraform plan
     ```
 
-* Run!
+* Launch!
 
     ```bash
     terraform apply
@@ -94,16 +102,45 @@ Ready to work!
 terraform destroy
 ```
 
----
+If your private SSH-key is passphrase secured you could add the key to the current `bash` session and enter the passphrase once like this
+
+```bash
+ssh-agent bash
+ssh-add ~/path/to/private.key
+```
+
+## Ansible plays
+
+Go back to project root and call Ansible commands passing a path to generated `inventory.ini` file.
 
 ### Ad-hoc: ping
 
-To check the host availability
+To check the hosts availability
 
 ```bash
-$ ansible -i inventory.ini vms -m ping
+$ ansible -i single-vm/inventory.ini vms -m ping
 
 sandbox | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+```
+
+```bash
+$ ansible -i web-app-group/inventory.ini vms -m ping
+app-1 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+app-2 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+web-1 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+db-1 | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
@@ -116,7 +153,7 @@ Run simple shell command.
 * get free RAM:
 
     ```bash
-    $ ansible -i inventory.ini vms -a "free -m"
+    $ ansible -i single-vm/inventory.ini vms -a "free -m"
 
     sandbox | CHANGED | rc=0 >>
                 total        used        free      shared  buff/cache   available
@@ -127,7 +164,7 @@ Run simple shell command.
 * view disk usage:
 
     ```bash
-    $ ansible -i inventory.ini vms -a "df -h"
+    $ ansible -i single-vm/inventory.ini vms -a "df -h"
 
     sandbox | CHANGED | rc=0 >>
     Filesystem      Size  Used Avail Use% Mounted on
