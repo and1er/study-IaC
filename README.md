@@ -9,7 +9,7 @@ Terraform also generates `inventory.ini` file and deploys public SSH key for Ans
 ## TODO
 
 * `command` vs `shell` examples;
-* `include_*` vs `import_` examples;
+* `include_*` vs `import_*` examples;
 
 ## Requirements
 
