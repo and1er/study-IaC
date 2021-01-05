@@ -180,3 +180,13 @@ Run simple shell command.
     /dev/loop3       32M   32M     0 100% /snap/snapd/10492
     tmpfs            96M     0   96M   0% /run/user/1000
     ```
+
+### Ad-hoc: fork control
+
+`-f` option sets a number of maximum forks for parallel tasks execution (default is `5`).
+
+If set to `1` every call's play order will be the same (but slower of course)
+
+```bash
+ansible -i web-app-group/inventory.ini vms -m ping -f 1
+```
