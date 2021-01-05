@@ -190,3 +190,13 @@ If set to `1` every call's play order will be the same (but slower of course)
 ```bash
 ansible -i web-app-group/inventory.ini vms -m ping -f 1
 ```
+
+### Ad-hoc: host facts
+
+An example of host's Ansible facts is committed to `web-1-facts.json` file, got this way:
+
+```bash
+ansible -i web-app-group/inventory.ini web-1 -m setup > web-app-group/fetched/web-1-facts.json
+```
+
+Note: personal public IPv4 address was removed from `ansible_env.SSH_CLIENT` and `ansible_env.SSH_CONNECTION` facts.
