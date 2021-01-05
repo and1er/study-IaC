@@ -106,7 +106,7 @@ If your private SSH-key is passphrase secured you could add the key to the curre
 
 ```bash
 ssh-agent bash
-ssh-add ~/path/to/private.key
+ssh-add /path/to/private.key
 ```
 
 ## Ansible plays
