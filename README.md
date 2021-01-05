@@ -57,7 +57,7 @@ To setup the environment and run playbooks (the actual versions I used are liste
 ## Workspaces
 
 * **single-vm** -- one EC2 instance;
-* **web-app-group** -- multi-instance group with hosts
+* **web-app-group** -- multi-instance group with Ubuntu 20.04 (Focal) hosts
   * 1 x web (a load balancer);
   * 2 x app;
   * 1 x db.
@@ -148,7 +148,7 @@ db-1 | SUCCESS => {
 
 ### Ad-hoc: simple shell command
 
-Run simple shell command.
+Run simple shell command (implicit `shell` or `command` module usage?).
 
 * get free RAM:
 
@@ -181,6 +181,20 @@ Run simple shell command.
     tmpfs            96M     0   96M   0% /run/user/1000
     ```
 
+* Python version:
+
+    ```bash
+    $ ansible -i web-app-group/inventory.ini vms -a "python3 -V"
+    web-1 | CHANGED | rc=0 >>
+    Python 3.8.5
+    app-1 | CHANGED | rc=0 >>
+    Python 3.8.5
+    db-1 | CHANGED | rc=0 >>
+    Python 3.8.5
+    app-2 | CHANGED | rc=0 >>
+    Python 3.8.5
+    ```
+
 ### Ad-hoc: fork control
 
 `-f` option sets a number of maximum forks for parallel tasks execution (default is `5`).
@@ -200,3 +214,16 @@ ansible -i web-app-group/inventory.ini web-1 -m setup > web-app-group/fetched/we
 ```
 
 Note: personal public IPv4 address was removed from `ansible_env.SSH_CLIENT` and `ansible_env.SSH_CONNECTION` facts.
+
+### Ad-hoc: call a module with parameters
+
+Example: install `vim` package using `apt`.
+
+```bash
+$ ansible -i web-app-group/inventory.ini web-1 -b -m apt -a "name=vim state=present update_cache=yes"
+web-1 | SUCCESS => {
+    "cache_update_time": 1609882860,
+    "cache_updated": true,
+    "changed": false
+}
+```
