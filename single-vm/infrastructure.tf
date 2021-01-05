@@ -2,7 +2,7 @@ provider "aws" {}
 
 # --- SSH access key ---
 resource "aws_key_pair" "ssh_access_key" {
-  key_name = "and1er-ssh-access-key"
+  key_name = "vm-ssh-access-key"
   public_key = var.STUDY_ANSIBLE_PUBLIC_KEY
 }
 
@@ -54,7 +54,7 @@ data "aws_ami" "latest_ubuntu_focal" {
 resource "aws_instance" "ubuntu_ansible_sandbox" {
   ami = data.aws_ami.latest_ubuntu_focal.id
   instance_type = "t3.micro"
-  key_name = "and1er-ssh-access-key"
+  key_name = "vm-ssh-access-key"
   vpc_security_group_ids = [
     aws_security_group.webserver_group.id
   ]
