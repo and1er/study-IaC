@@ -33,17 +33,25 @@ To setup the environment and run playbooks (the actual versions I used are liste
     Terraform v0.14.2
     ```
 
-* copy env-vars setup script from versioned example to gitignored file;
+* setup an working envronment
+  * copy env-vars setup script from versioned example to gitignored file;
 
     ```bash
     cp ./secrets.sh.example ./secrets.sh
     ```
 
-* fill `secrets.sh` with personal data;
-* every work session should be started from the script call to setup the env (in the same terminal as Terraform will be run)
+  * fill `secrets.sh` with personal data;
+  * every work session should be started from the script call to setup the env (in the same terminal as Terraform will be run)
 
     ```bash
     source ./secrets.sh
+    ```
+
+* or you could setup the variables manually in the terminal but _do not forget to add a whitespace before the command to make the command ignored by a shell command history_ like this
+
+    ```bash
+    # Here is a space before `export`
+     export AWS_SECRET_ACCESS_KEY="my very secret key"
     ```
 
 ## single-vm
