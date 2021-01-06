@@ -44,7 +44,9 @@ resource "aws_security_group" "webserver_group" {
 # TODO: Create a VPC.
 
 # --- Instances ---
-# Lookup for latest Ubuntu 20.04 OS image for any region.
+# Lookup for latest OS image AMIs for any region.
+
+# Ubuntu 20.04 Focal.
 # Tested on "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20201210"
 data "aws_ami" "latest_ubuntu_focal" {
   owners      = ["099720109477"]
@@ -54,9 +56,19 @@ data "aws_ami" "latest_ubuntu_focal" {
     values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
   }
 }
+# Amazon Linux.
+# Tested on "amzn2-ami-hvm-2.0.20201218.1-x86_64-gp2"
+data "aws_ami" "latest_amazon_linux" {
+  owners      = ["137112412989"]
+  most_recent = true
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-2.0.*-x86_64-gp2"]
+  }
+}
 # Launch the instances.
 resource "aws_instance" "web_ansible_sandbox_host" {
-  ami = data.aws_ami.latest_ubuntu_focal.id
+  ami = data.aws_ami.latest_amazon_linux.id
   instance_type = "t3.micro"
   key_name = "vm-ssh-access-key"
   vpc_security_group_ids = [
@@ -107,9 +119,11 @@ data "template_file" "ansible_inventory_content" {
     app2_host = aws_instance.app_ansible_sandbox_host[1].public_ip
     db_host = aws_instance.db_ansible_sandbox_host.public_ip
     # Parameters
-    ssh_user = var.ansible_inventory_ssh_user
     ssh_private_key_file = var.STUDY_ANSIBLE_PRIVATE_KEY_FILE
-    python_interpreter = var.ansible_inventory_python_interpreter
+    ubuntu_ssh_user = var.ansible_inventory_ubuntu_ssh_user
+    ubuntu_python_interpreter = var.ansible_inventory_ubuntu_python_interpreter
+    amazon_linux_ssh_user = var.ansible_inventory_amazon_linux_ssh_user
+    amazon_linux_python_interpreter = var.ansible_inventory_amazon_linux_python_interpreter
   }
 }
 resource "local_file" "ansible_inventory_file" {

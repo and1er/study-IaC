@@ -15,12 +15,21 @@ variable "ansible_inventory_file_path" {
   type = string
   default = "./inventory.ini"
 }
-variable "ansible_inventory_ssh_user" {
+variable "ansible_inventory_ubuntu_ssh_user" {
   type = string
   default = "ubuntu"
 }
+variable "ansible_inventory_amazon_linux_ssh_user" {
+  type = string
+  default = "ec2-user"
+}
 
-variable "ansible_inventory_python_interpreter" {
+variable "ansible_inventory_ubuntu_python_interpreter" {
   type = string
   default = "/usr/bin/python3"
+}
+
+variable "ansible_inventory_amazon_linux_python_interpreter" {
+  type = string
+  default = "/usr/bin/python"
 }

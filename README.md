@@ -8,8 +8,20 @@ Terraform also generates `inventory.ini` file and deploys public SSH key for Ans
 
 ## TODO
 
+Some minor TODO's are placed directly in sources with `TODO:` comments.
+
+### Ansible
+
 * `command` vs `shell` examples;
 * `include_*` vs `import_*` examples;
+* Assign `ansible_ssh_user` depending on OS family smarter than manual groups usage.
+
+### Terraform
+
+* Create a non-default user on instances (but the same on Ubuntu and Amazon Linux).
+* Think how to optimize Terraform sources and service files between multiple directories.
+  * Maybe something like `terraform apply web-app-group/` could be called from the project root dir?
+* Maybe instead a scalar variables some data structures could be used?
 
 ## Requirements
 
@@ -56,11 +68,11 @@ To setup the environment and run playbooks (the actual versions I used are liste
 
 ## Workspaces
 
-* **single-vm** -- one EC2 instance;
-* **web-app-group** -- multi-instance group with Ubuntu 20.04 (Focal) hosts
-  * 1 x web (a load balancer);
-  * 2 x app;
-  * 1 x db.
+* **single-vm** -- one EC2 Ubuntu 20.04 (Focal) instance;
+* **web-app-group** -- multi-instance EC2 group of hosts:
+  * 1 x web (a load balancer): Amazon Linux 2.0 (RedHat OS family);
+  * 2 x app: Ubuntu 20.04 (Focal);
+  * 1 x db: Ubuntu 20.04 (Focal).
 
 ## Launch Instances
 
@@ -181,18 +193,28 @@ Run simple shell command (implicit `shell` or `command` module usage?).
     tmpfs            96M     0   96M   0% /run/user/1000
     ```
 
-* Python version:
+* Python version (Amazon Linux and Ubuntu are different):
 
     ```bash
     $ ansible -i web-app-group/inventory.ini vms -a "python3 -V"
-    web-1 | CHANGED | rc=0 >>
+    app-2 | CHANGED | rc=0 >>
     Python 3.8.5
     app-1 | CHANGED | rc=0 >>
     Python 3.8.5
+    web-1 | FAILED | rc=2 >>
+    [Errno 2] No such file or directory
     db-1 | CHANGED | rc=0 >>
     Python 3.8.5
-    app-2 | CHANGED | rc=0 >>
-    Python 3.8.5
+
+    $ ansible -i web-app-group/inventory.ini vms -a "python -V"
+    app-2 | FAILED | rc=2 >>
+    [Errno 2] No such file or directory: b'python'
+    db-1 | FAILED | rc=2 >>
+    [Errno 2] No such file or directory: b'python'
+    app-1 | FAILED | rc=2 >>
+    [Errno 2] No such file or directory: b'python'
+    web-1 | CHANGED | rc=0 >>
+    Python 2.7.18
     ```
 
 ### Ad-hoc: fork control
@@ -210,7 +232,9 @@ ansible -i web-app-group/inventory.ini vms -m ping -f 1
 An example of host's Ansible facts is committed to `web-1-facts.json` file, got this way:
 
 ```bash
-ansible -i web-app-group/inventory.ini web-1 -m setup > web-app-group/fetched/web-1-facts.json
+ansible -i web-app-group/inventory.ini web-1 -m setup > web-app-group/fetched/web-1-amazon-linux-facts.json
+
+ansible -i web-app-group/inventory.ini db-1 -m setup > web-app-group/fetched/db-1-ubuntu-facts.json
 ```
 
 Note: personal public IPv4 address was removed from `ansible_env.SSH_CLIENT` and `ansible_env.SSH_CONNECTION` facts.
