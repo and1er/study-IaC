@@ -241,12 +241,32 @@ Note: personal public IPv4 address was removed from `ansible_env.SSH_CLIENT` and
 
 ### Ad-hoc: call a module with parameters
 
-Example: install `vim` package using `apt`.
+Example: install `vim` package using `package` module (which automatically selects `apt` for Debian OS family and `yum` for RedHat OS family).
+
+`-b` option means "become" (as sudo user).
 
 ```bash
-$ ansible -i web-app-group/inventory.ini web-1 -b -m apt -a "name=vim state=present update_cache=yes"
+$ ansible -i web-app-group/inventory.ini vms -b -m package -a "name=vim state=present update_cache=yes"
 web-1 | SUCCESS => {
-    "cache_update_time": 1609882860,
+    "changed": false,
+    "msg": "",
+    "rc": 0,
+    "results": [
+        "2:vim-enhanced-8.1.1602-1.amzn2.x86_64 providing vim is already installed"
+    ]
+}
+app-2 | SUCCESS => {
+    "cache_update_time": 1609962833,
+    "cache_updated": true,
+    "changed": false
+}
+db-1 | SUCCESS => {
+    "cache_update_time": 1609962833,
+    "cache_updated": true,
+    "changed": false
+}
+app-1 | SUCCESS => {
+    "cache_update_time": 1609962833,
     "cache_updated": true,
     "changed": false
 }
