@@ -3,22 +3,34 @@
 
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "ubuntu/focal64"
   
-  # VM config.
-  config.vm.provider :virtualbox do |v|
-    v.name = "ubuntu20.test"
-    v.memory = 1024
-    v.cpus = 2
-    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    v.customize ["modifyvm", :id, "--ioapic", "on"]
-    # web.vm.synced_folder ".", "/vagrant", disabled: true
+  # web --- load balancer host.
+  config.vm.define "web" do |web|
+    web.vm.box = "centos/8"
+    web.vm.hostname = "web"
+    web.vm.network :private_network, ip: "192.168.30.11"
+    web.vm.synced_folder ".", "/vagrant", disabled: true
+    web.vm.provider :virtualbox do |vb|
+      vb.name = "web_centos_8"
+      vb.cpus = 1
+      vb.memory = 512
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      vb.customize ["modifyvm", :id, "--ioapic", "on"]
+    end
   end
 
-  # Network settings.
-  config.vm.network :private_network, ip: "192.168.30.30"
-  config.vm.hostname = "ubuntu20.test"
-  
-  # Provisioning.
-  config.vm.provision :shell, path: "bootstrap.sh"
+  # Database host.
+  config.vm.define "db" do |db|
+    db.vm.box = "ubuntu/focal64"
+    db.vm.hostname = "db"
+    db.vm.network :private_network, ip: "192.168.30.12"
+    db.vm.synced_folder ".", "/vagrant", disabled: true
+    db.vm.provider :virtualbox do |vb|
+      vb.name = "db_ubuntu_20"
+      vb.cpus = 2
+      vb.memory = 1024
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      vb.customize ["modifyvm", :id, "--ioapic", "on"]
+    end
+  end
 end
