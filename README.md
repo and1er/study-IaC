@@ -10,6 +10,8 @@ Terraform also generates `inventory.ini` file and deploys public SSH key for Ans
 
 Some minor TODO's are placed directly in sources with `TODO:` comments.
 
+* Separate Infrastructure (vagrant, terraform-aws) and provisioning.
+
 ### Ansible
 
 * `command` vs `shell` examples;
