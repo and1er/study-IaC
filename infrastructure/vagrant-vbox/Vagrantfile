@@ -3,6 +3,10 @@
 
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # Do not deploy default vagrant SSH-key.
+  config.ssh.insert_key = false
+
   # web --- load balancer host.
   config.vm.define "web" do |web|
     web.vm.box = "ubuntu/focal64"
@@ -53,4 +57,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
+  # Deploy own SSH-keys.
+  config.vm.provision "file", source: "./authorized_keys", destination: "/home/vagrant/.ssh/authorized_keys"
 end
