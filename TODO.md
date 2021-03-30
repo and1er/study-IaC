@@ -7,10 +7,13 @@ Vagrant
 -------------
 
 * Generate Ansible inventory file at `vagrant up` instead of static `infrastructure/vagrant-vbox/inventory.ini` file.
+* Add and index to `db` host as in Terraform (could be `db1` and `db2` in the future).
 
 Terraform
 ----------------
 
+* Repair after project refactoring.
+* Set the same env as in Vagrant.
 * Create a non-default user on instances (but the same on Ubuntu and Amazon Linux).
 * Think how to optimize Terraform sources and service files between multiple directories.
   * Maybe something like `terraform apply web-app-group/` could be called from the project root dir?

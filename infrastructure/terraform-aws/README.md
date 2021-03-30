@@ -12,7 +12,6 @@ Requirements
 
 To setup the environment and run playbooks (the actual versions I used are listed below)
 
-
 * get AWS user access key pair from [AWS account](https://aws.amazon.com/), [IAM service](https://console.aws.amazon.com/iam/home);
 * [install Terraform](https://www.terraform.io/downloads.html);
 
@@ -25,6 +24,7 @@ To setup the environment and run playbooks (the actual versions I used are liste
   * copy env-vars setup script from versioned example to gitignored file;
 
     ```bash
+    cd infrastructure/terraform-aws/
     cp ./secrets.sh.example ./secrets.sh
     ```
 
