@@ -5,14 +5,16 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # web --- load balancer host.
   config.vm.define "web" do |web|
-    web.vm.box = "centos/8"
+    web.vm.box = "ubuntu/focal64"
+    # web.vm.box = "centos/8"
     web.vm.hostname = "web"
     web.vm.network :private_network, ip: "192.168.30.11"
     web.vm.synced_folder ".", "/vagrant", disabled: true
     web.vm.provider :virtualbox do |vb|
-      vb.name = "web_centos_8"
+      vb.name = "web_ubuntu_20"
+      # vb.name = "web_centos_8"
       vb.cpus = 1
-      vb.memory = 512
+      vb.memory = 1024
       vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
       vb.customize ["modifyvm", :id, "--ioapic", "on"]
     end
