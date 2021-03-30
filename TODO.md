@@ -6,7 +6,7 @@ Some minor TODO's are placed directly in sources with `TODO STUDY:` comments.
 Vagrant
 -------------
 
-* Generate Ansible inventory file at `vagrant up` instead of static `vagrant/inventory.ini` file.
+* Generate Ansible inventory file at `vagrant up` instead of static `infrastructure/vagrant-vbox/inventory.ini` file.
 
 Terraform
 ----------------
