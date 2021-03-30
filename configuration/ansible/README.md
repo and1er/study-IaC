@@ -25,36 +25,49 @@ python version = 3.8.5 (default, Jan 27 2021, 15:41:15) [GCC 9.3.0]
 
 ## Ansible plays
 
-Go back to project root and call Ansible commands passing a path to generated `inventory.ini` file.
+The commands should be run from a project root.
+
+First of all, setup the environment depending on infractructure provider
+
+Vagrant:
+
+```bash
+source infrastructure/vagrant-vbox/env.sh 
+```
+
+The environment will have a variable `$STUDY_IAC_ANSIBLE_INVENTORY_FILE` with a path to inventory file.
 
 ### Ad-hoc: ping
 
 To check the hosts availability
 
 ```bash
-$ ansible -i single-vm/inventory.ini vms -m ping
-
-sandbox | SUCCESS => {
+$ ansible -i "$STUDY_IAC_ANSIBLE_INVENTORY_FILE" all -m ping
+db | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
     "changed": false,
     "ping": "pong"
 }
-```
-
-```bash
-$ ansible -i web-app-group/inventory.ini vms -m ping
-app-1 | SUCCESS => {
+app1 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
     "changed": false,
     "ping": "pong"
 }
-app-2 | SUCCESS => {
+web | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
     "changed": false,
     "ping": "pong"
 }
-web-1 | SUCCESS => {
-    "changed": false,
-    "ping": "pong"
-}
-db-1 | SUCCESS => {
+app2 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
     "changed": false,
     "ping": "pong"
 }
@@ -67,38 +80,39 @@ Run simple shell command (implicit `shell` or `command` module usage?).
 * get free RAM:
 
     ```bash
-    $ ansible -i single-vm/inventory.ini vms -a "free -m"
-
-    sandbox | CHANGED | rc=0 >>
+    $ ansible -i "$STUDY_IAC_ANSIBLE_INVENTORY_FILE" app_hosts -a "free -m"
+    app1 | CHANGED | rc=0 >>
                 total        used        free      shared  buff/cache   available
-    Mem:            953         158         231           0         562         654
+    Mem:            981         146         486           0         347         683
+    Swap:             0           0           0
+    app2 | CHANGED | rc=0 >>
+                total        used        free      shared  buff/cache   available
+    Mem:            981         142         491           0         347         687
     Swap:             0           0           0
     ```
 
 * view disk usage:
 
     ```bash
-    $ ansible -i single-vm/inventory.ini vms -a "df -h"
-
-    sandbox | CHANGED | rc=0 >>
+    $ ansible -i "$STUDY_IAC_ANSIBLE_INVENTORY_FILE" db -a "df -h"
+    db | CHANGED | rc=0 >>
     Filesystem      Size  Used Avail Use% Mounted on
-    /dev/root       7.7G  1.3G  6.5G  17% /
-    devtmpfs        473M     0  473M   0% /dev
-    tmpfs           477M     0  477M   0% /dev/shm
-    tmpfs            96M  764K   95M   1% /run
+    udev            474M     0  474M   0% /dev
+    tmpfs            99M  940K   98M   1% /run
+    /dev/sda1        39G  1.3G   38G   4% /
+    tmpfs           491M     0  491M   0% /dev/shm
     tmpfs           5.0M     0  5.0M   0% /run/lock
-    tmpfs           477M     0  477M   0% /sys/fs/cgroup
-    /dev/loop0       33M   33M     0 100% /snap/amazon-ssm-agent/2996
-    /dev/loop1       56M   56M     0 100% /snap/core18/1932
-    /dev/loop2       68M   68M     0 100% /snap/lxd/18150
-    /dev/loop3       32M   32M     0 100% /snap/snapd/10492
-    tmpfs            96M     0   96M   0% /run/user/1000
+    tmpfs           491M     0  491M   0% /sys/fs/cgroup
+    /dev/loop0       56M   56M     0 100% /snap/core18/1988
+    /dev/loop1       71M   71M     0 100% /snap/lxd/19647
+    /dev/loop2       33M   33M     0 100% /snap/snapd/11402
+    tmpfs            99M     0   99M   0% /run/user/1000
     ```
 
 * Python version (Amazon Linux and Ubuntu are different):
 
     ```bash
-    $ ansible -i web-app-group/inventory.ini vms -a "python3 -V"
+    $ ansible -i "$STUDY_IAC_ANSIBLE_INVENTORY_FILE" vms -a "python3 -V"
     app-2 | CHANGED | rc=0 >>
     Python 3.8.5
     app-1 | CHANGED | rc=0 >>
@@ -108,7 +122,7 @@ Run simple shell command (implicit `shell` or `command` module usage?).
     db-1 | CHANGED | rc=0 >>
     Python 3.8.5
 
-    $ ansible -i web-app-group/inventory.ini vms -a "python -V"
+    $ ansible -i "$STUDY_IAC_ANSIBLE_INVENTORY_FILE" vms -a "python -V"
     app-2 | FAILED | rc=2 >>
     [Errno 2] No such file or directory: b'python'
     db-1 | FAILED | rc=2 >>
@@ -126,7 +140,7 @@ Run simple shell command (implicit `shell` or `command` module usage?).
 If set to `1` every call's play order will be the same (but slower of course)
 
 ```bash
-ansible -i web-app-group/inventory.ini vms -m ping -f 1
+ansible -i "$STUDY_IAC_ANSIBLE_INVENTORY_FILE" vms -m ping -f 1
 ```
 
 ### Ad-hoc: host facts
@@ -134,9 +148,9 @@ ansible -i web-app-group/inventory.ini vms -m ping -f 1
 An example of host's Ansible facts is committed to `web-1-facts.json` file, got this way:
 
 ```bash
-ansible -i web-app-group/inventory.ini web-1 -m setup > web-app-group/fetched/web-1-amazon-linux-facts.json
+ansible -i "$STUDY_IAC_ANSIBLE_INVENTORY_FILE"web-1 -m setup > web-app-group/fetched/web-1-amazon-linux-facts.json
 
-ansible -i web-app-group/inventory.ini db-1 -m setup > web-app-group/fetched/db-1-ubuntu-facts.json
+ansible -i "$STUDY_IAC_ANSIBLE_INVENTORY_FILE"db-1 -m setup > web-app-group/fetched/db-1-ubuntu-facts.json
 ```
 
 Note: personal public IPv4 address was removed from `ansible_env.SSH_CLIENT` and `ansible_env.SSH_CONNECTION` facts.
@@ -148,7 +162,7 @@ Example: install `vim` package using `package` module (which automatically selec
 `-b` option means "become" (as sudo user).
 
 ```bash
-$ ansible -i web-app-group/inventory.ini vms -b -m package -a "name=vim state=present update_cache=yes"
+$ ansible -i "$STUDY_IAC_ANSIBLE_INVENTORY_FILE" vms -b -m package -a "name=vim state=present update_cache=yes"
 web-1 | SUCCESS => {
     "changed": false,
     "msg": "",
