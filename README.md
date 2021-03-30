@@ -6,22 +6,7 @@ The infrastructure for Ansible study is created in AWS EC2 cloud service using T
 
 Terraform also generates `inventory.ini` file and deploys public SSH key for Ansible for further playbook calls.
 
-## TODO
-
-Some minor TODO's are placed directly in sources with `TODO:` comments.
-
-### Ansible
-
-* `command` vs `shell` examples;
-* `include_*` vs `import_*` examples;
-* Assign `ansible_ssh_user` depending on OS family smarter than manual groups usage.
-
-### Terraform
-
-* Create a non-default user on instances (but the same on Ubuntu and Amazon Linux).
-* Think how to optimize Terraform sources and service files between multiple directories.
-  * Maybe something like `terraform apply web-app-group/` could be called from the project root dir?
-* Maybe instead a scalar variables some data structures could be used?
+TODO's are in [./TODO.md](./TODO.md).
 
 ## Requirements
 

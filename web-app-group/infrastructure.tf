@@ -7,7 +7,7 @@ resource "aws_key_pair" "ssh_access_key" {
 }
 
 # --- Security groups ---
-# TODO: Separate security groups for each host role.
+# TODO STUDY: Separate security groups for each host role.
 resource "aws_security_group" "webserver_group" {
   name = "Webserver security group"
   description = "Basic security rules for webservers."
@@ -41,7 +41,7 @@ resource "aws_security_group" "webserver_group" {
 }
 
 # --- VPC ---
-# TODO: Create a VPC.
+# TODO STUDY: Create a VPC.
 
 # --- Instances ---
 # Lookup for latest OS image AMIs for any region.
@@ -114,7 +114,7 @@ data "template_file" "ansible_inventory_content" {
   vars = {
     # Hosts.
     web_host = aws_instance.web_ansible_sandbox_host.public_ip
-    # TODO: Process multiple instances dynamically.
+    # TODO STUDY: Process multiple instances dynamically.
     app1_host = aws_instance.app_ansible_sandbox_host[0].public_ip
     app2_host = aws_instance.app_ansible_sandbox_host[1].public_ip
     db_host = aws_instance.db_ansible_sandbox_host.public_ip
